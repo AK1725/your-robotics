@@ -6,8 +6,8 @@ import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
+  Checkbox
 } from "@/components/ui";
-import { Checkbox } from "@/components/ui/checkbox";
 
 interface SidebarProps {
   isOpen: boolean;
