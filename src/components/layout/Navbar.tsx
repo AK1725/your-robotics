@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { ShoppingCart, User, Menu, Search, X } from "lucide-react";
@@ -42,7 +43,7 @@ const Navbar = () => {
               <img
                 src="/lovable-uploads/e168059f-d7cb-44ef-bdd9-1b9839d3ae03.png"
                 alt="YourRobotics Logo"
-                className="h-12 md:h-14" /* Increased the size from h-10 */
+                className="h-16 md:h-20" /* Increased the size from h-12 md:h-14 to h-16 md:h-20 */
               />
             </Link>
           </div>
