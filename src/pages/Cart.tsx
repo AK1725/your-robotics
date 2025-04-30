@@ -56,6 +56,9 @@ const Cart = () => {
   const taxEstimate = cartSubtotal * 0.07; // 7% tax rate
   const orderTotal = cartSubtotal + shippingEstimate + taxEstimate;
 
+  // Exchange rate: 1 USD = ~110 Taka (approximate)
+  const exchangeRate = 110;
+
   const updateQuantity = (itemId: number, newQuantity: number) => {
     if (newQuantity < 1) return;
 
@@ -101,6 +104,11 @@ const Cart = () => {
       });
       setIsApplyingCoupon(false);
     }, 1000);
+  };
+
+  // Function to format price in Taka
+  const formatTaka = (price: number) => {
+    return `৳${Math.round(price * exchangeRate).toLocaleString()}`;
   };
 
   return (
@@ -189,7 +197,7 @@ const Cart = () => {
                   <div className="flex items-center justify-center sm:justify-center">
                     <span className="sm:hidden font-medium mr-2">Price:</span>
                     <span className="text-robo-900">
-                      ${item.price.toFixed(2)}
+                      {formatTaka(item.price)}
                     </span>
                   </div>
 
@@ -220,7 +228,7 @@ const Cart = () => {
                   <div className="flex items-center justify-end">
                     <span className="sm:hidden font-medium mr-2">Subtotal:</span>
                     <span className="font-medium text-robo-900">
-                      ${(item.price * item.quantity).toFixed(2)}
+                      {formatTaka(item.price * item.quantity)}
                     </span>
                   </div>
                 </div>
@@ -261,7 +269,7 @@ const Cart = () => {
                     <div className="flex justify-between">
                       <span className="text-robo-700">Subtotal</span>
                       <span className="font-medium text-robo-900">
-                        ${cartSubtotal.toFixed(2)}
+                        {formatTaka(cartSubtotal)}
                       </span>
                     </div>
                     <div className="flex justify-between">
@@ -270,14 +278,14 @@ const Cart = () => {
                         {shippingEstimate ===  0 ? (
                           <span className="text-green-600">Free</span>
                         ) : (
-                          `$${shippingEstimate.toFixed(2)}`
+                          formatTaka(shippingEstimate)
                         )}
                       </span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-robo-700">Tax estimate (7%)</span>
                       <span className="font-medium text-robo-900">
-                        ${taxEstimate.toFixed(2)}
+                        {formatTaka(taxEstimate)}
                       </span>
                     </div>
                     <div className="border-t pt-3 mt-3">
@@ -286,7 +294,7 @@ const Cart = () => {
                           Order total
                         </span>
                         <span className="font-bold text-lg text-robo-900">
-                          ${orderTotal.toFixed(2)}
+                          {formatTaka(orderTotal)}
                         </span>
                       </div>
                     </div>

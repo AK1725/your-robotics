@@ -15,9 +15,8 @@ const Footer = () => {
               <img
                 src="/lovable-uploads/e168059f-d7cb-44ef-bdd9-1b9839d3ae03.png"
                 alt="YourRobotics Logo"
-                className="h-10 invert"
+                className="h-12 invert"
               />
-              <span className="ml-2 text-xl font-bold">YourRobotics</span>
             </Link>
             <p className="text-robo-100">
               Providing cutting-edge robotics components for enthusiasts and professionals.

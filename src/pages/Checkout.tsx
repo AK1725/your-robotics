@@ -45,6 +45,9 @@ const Checkout = () => {
   const shippingCost = cartSubtotal > 100 ? 0 : 9.99;
   const taxAmount = cartSubtotal * 0.07; // 7% tax rate
   const orderTotal = cartSubtotal + shippingCost + taxAmount;
+  
+  // Exchange rate: 1 USD = ~110 Taka (approximate)
+  const exchangeRate = 110;
 
   const handlePlaceOrder = (e: React.FormEvent) => {
     e.preventDefault();
@@ -59,6 +62,11 @@ const Checkout = () => {
       setIsProcessingOrder(false);
       // In a real app, you would redirect to an order confirmation page
     }, 2000);
+  };
+
+  // Function to format price in Taka
+  const formatTaka = (price: number) => {
+    return `৳${Math.round(price * exchangeRate).toLocaleString()}`;
   };
 
   return (
@@ -117,26 +125,27 @@ const Checkout = () => {
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="city">City</Label>
-                      <Input id="city" placeholder="San Francisco" required />
+                      <Input id="city" placeholder="Dhaka" required />
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <Label htmlFor="state">State</Label>
+                        <Label htmlFor="state">District</Label>
                         <Select required>
                           <SelectTrigger id="state">
                             <SelectValue placeholder="Select" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="ca">California</SelectItem>
-                            <SelectItem value="ny">New York</SelectItem>
-                            <SelectItem value="tx">Texas</SelectItem>
-                            {/* Add more states as needed */}
+                            <SelectItem value="dhaka">Dhaka</SelectItem>
+                            <SelectItem value="chittagong">Chittagong</SelectItem>
+                            <SelectItem value="khulna">Khulna</SelectItem>
+                            <SelectItem value="rajshahi">Rajshahi</SelectItem>
+                            <SelectItem value="sylhet">Sylhet</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="zipCode">ZIP Code</Label>
-                        <Input id="zipCode" placeholder="94103" required />
+                        <Label htmlFor="zipCode">Postal Code</Label>
+                        <Input id="zipCode" placeholder="1200" required />
                       </div>
                     </div>
                     <div className="space-y-2 md:col-span-2">
@@ -144,7 +153,7 @@ const Checkout = () => {
                       <Input
                         id="phone"
                         type="tel"
-                        placeholder="(123) 456-7890"
+                        placeholder="01XXXXXXXXX"
                         required
                       />
                     </div>
@@ -168,7 +177,7 @@ const Checkout = () => {
                         </div>
                       </Label>
                       <div className="font-semibold text-robo-900">
-                        {shippingCost === 0 ? "Free" : `$${shippingCost.toFixed(2)}`}
+                        {shippingCost === 0 ? "Free" : formatTaka(shippingCost)}
                       </div>
                     </div>
                     <div className="flex items-center space-x-2 border rounded-md p-4">
@@ -179,7 +188,7 @@ const Checkout = () => {
                           1-2 business days
                         </div>
                       </Label>
-                      <div className="font-semibold text-robo-900">$14.99</div>
+                      <div className="font-semibold text-robo-900">{formatTaka(14.99)}</div>
                     </div>
                   </RadioGroup>
                 </CardContent>
@@ -195,8 +204,8 @@ const Checkout = () => {
                   <Tabs defaultValue="credit-card" className="w-full">
                     <TabsList className="grid w-full grid-cols-3">
                       <TabsTrigger value="credit-card">Credit Card</TabsTrigger>
-                      <TabsTrigger value="paypal">PayPal</TabsTrigger>
-                      <TabsTrigger value="apple-pay">Apple Pay</TabsTrigger>
+                      <TabsTrigger value="bkash">bKash</TabsTrigger>
+                      <TabsTrigger value="nagad">Nagad</TabsTrigger>
                     </TabsList>
                     <TabsContent value="credit-card" className="pt-4">
                       <div className="space-y-4">
@@ -224,29 +233,29 @@ const Checkout = () => {
                         </div>
                       </div>
                     </TabsContent>
-                    <TabsContent value="paypal" className="pt-4">
+                    <TabsContent value="bkash" className="pt-4">
                       <div className="text-center py-8">
                         <div className="text-robo-600 mb-4">
-                          You will be redirected to PayPal to complete your purchase.
+                          You will be redirected to bKash to complete your payment.
                         </div>
                         <Button
                           type="button"
-                          className="bg-[#0070BA] hover:bg-[#005ea6]"
+                          className="bg-[#E2136E] hover:bg-[#C60F5E]"
                         >
-                          Continue with PayPal
+                          Pay with bKash
                         </Button>
                       </div>
                     </TabsContent>
-                    <TabsContent value="apple-pay" className="pt-4">
+                    <TabsContent value="nagad" className="pt-4">
                       <div className="text-center py-8">
                         <div className="text-robo-600 mb-4">
-                          Complete your purchase with Apple Pay.
+                          Complete your purchase with Nagad.
                         </div>
                         <Button
                           type="button"
-                          className="bg-black hover:bg-black/80 text-white"
+                          className="bg-[#F15A29] hover:bg-[#E04A19] text-white"
                         >
-                          Pay with Apple Pay
+                          Pay with Nagad
                         </Button>
                       </div>
                     </TabsContent>
@@ -277,7 +286,7 @@ const Checkout = () => {
                               </span>
                             </div>
                             <span className="font-medium text-robo-900">
-                              ${(item.price * item.quantity).toFixed(2)}
+                              {formatTaka(item.price * item.quantity)}
                             </span>
                           </div>
                         ))}
@@ -287,7 +296,7 @@ const Checkout = () => {
                         <div className="flex justify-between mb-2">
                           <span className="text-robo-700">Subtotal</span>
                           <span className="font-medium text-robo-900">
-                            ${cartSubtotal.toFixed(2)}
+                            {formatTaka(cartSubtotal)}
                           </span>
                         </div>
                         <div className="flex justify-between mb-2">
@@ -296,14 +305,14 @@ const Checkout = () => {
                             {shippingCost === 0 ? (
                               <span className="text-green-600">Free</span>
                             ) : (
-                              `$${shippingCost.toFixed(2)}`
+                              formatTaka(shippingCost)
                             )}
                           </span>
                         </div>
                         <div className="flex justify-between">
                           <span className="text-robo-700">Tax (7%)</span>
                           <span className="font-medium text-robo-900">
-                            ${taxAmount.toFixed(2)}
+                            {formatTaka(taxAmount)}
                           </span>
                         </div>
                       </div>
@@ -314,7 +323,7 @@ const Checkout = () => {
                             Total
                           </span>
                           <span className="font-bold text-xl text-robo-900">
-                            ${orderTotal.toFixed(2)}
+                            {formatTaka(orderTotal)}
                           </span>
                         </div>
                       </div>
