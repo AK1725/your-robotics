@@ -69,8 +69,8 @@ const AiAssistant = () => {
   };
 
   return (
-    <div className="container-custom py-12 max-w-5xl">
-      <div className="flex flex-col space-y-8">
+    <div className="container-custom py-8 md:py-12 max-w-6xl">
+      <div className="flex flex-col space-y-6">
         <div className="text-center">
           <h1 className="text-4xl font-bold bg-gradient-to-r from-robo-600 to-robo-800 text-transparent bg-clip-text mb-3">AI Assistant</h1>
           <p className="text-robo-600 max-w-2xl mx-auto">
@@ -84,7 +84,7 @@ const AiAssistant = () => {
             <TabsTrigger value="samples">Sample Questions</TabsTrigger>
           </TabsList>
           
-          <TabsContent value="chat" className="mt-0 space-y-4">
+          <TabsContent value="chat" className="mt-0">
             <ChatInterface 
               messages={messages}
               isLoading={isLoading}

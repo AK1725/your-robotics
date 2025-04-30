@@ -5,6 +5,7 @@ import { Message } from "./types";
 import { ChatMessage } from "./ChatMessage";
 import { TypingIndicator } from "./TypingIndicator";
 import { ChatInput } from "./ChatInput";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface ChatInterfaceProps {
   messages: Message[];
@@ -29,15 +30,17 @@ export const ChatInterface = ({
   }, [messages]);
 
   return (
-    <Card className="flex flex-col h-[calc(100vh-24rem)] shadow-lg border-robo-200 overflow-hidden bg-gradient-to-br from-white to-robo-50 backdrop-blur-sm rounded-xl">
+    <Card className="flex flex-col h-[calc(100vh-12rem)] shadow-lg border-robo-200 overflow-hidden bg-gradient-to-br from-white to-robo-50 backdrop-blur-sm rounded-xl">
       {/* Chat Messages */}
-      <div className="flex-1 overflow-y-auto p-6 space-y-6">
-        {messages.map((message) => (
-          <ChatMessage key={message.id} message={message} />
-        ))}
-        {isLoading && <TypingIndicator />}
-        <div ref={endOfMessagesRef} />
-      </div>
+      <ScrollArea className="flex-1 p-6">
+        <div className="space-y-6 pr-4">
+          {messages.map((message) => (
+            <ChatMessage key={message.id} message={message} />
+          ))}
+          {isLoading && <TypingIndicator />}
+          <div ref={endOfMessagesRef} />
+        </div>
+      </ScrollArea>
       
       {/* Input Area */}
       <ChatInput
