@@ -12,6 +12,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { ThemeToggle } from "../theme/ThemeToggle";
 
 const Navbar = () => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -43,7 +44,7 @@ const Navbar = () => {
               <img
                 src="/lovable-uploads/e168059f-d7cb-44ef-bdd9-1b9839d3ae03.png"
                 alt="YourRobotics Logo"
-                className="h-16 md:h-20" /* Increased the size from h-12 md:h-14 to h-16 md:h-20 */
+                className="h-16 md:h-20 dark:invert"
               />
             </Link>
           </div>
@@ -52,37 +53,37 @@ const Navbar = () => {
           <nav className="hidden md:flex items-center space-x-4 lg:space-x-6">
             <Link
               to="/"
-              className="text-sm font-medium text-robo-900 hover:text-robo-600 transition-colors"
+              className="text-sm font-medium text-foreground hover:text-primary transition-colors"
             >
               Home
             </Link>
             <Link
               to="/products"
-              className="text-sm font-medium text-robo-900 hover:text-robo-600 transition-colors"
+              className="text-sm font-medium text-foreground hover:text-primary transition-colors"
             >
               Products
             </Link>
             <Link
               to="/about"
-              className="text-sm font-medium text-robo-900 hover:text-robo-600 transition-colors"
+              className="text-sm font-medium text-foreground hover:text-primary transition-colors"
             >
               About
             </Link>
             <Link
               to="/contact"
-              className="text-sm font-medium text-robo-900 hover:text-robo-600 transition-colors"
+              className="text-sm font-medium text-foreground hover:text-primary transition-colors"
             >
               Contact
             </Link>
             <Link
               to="/ai-assistant"
-              className="text-sm font-medium text-robo-600 hover:text-robo-700 transition-colors"
+              className="text-sm font-medium text-primary hover:text-primary/80 transition-colors"
             >
               AI Assistant
             </Link>
           </nav>
 
-          {/* Search, Cart, User */}
+          {/* Search, Cart, User, Theme Toggle */}
           <div className="flex items-center space-x-2">
             {isSearchOpen ? (
               <div className="absolute inset-x-0 top-0 bg-background z-50 flex items-center h-16 px-4 md:px-6 lg:relative lg:inset-auto lg:bg-transparent">
@@ -112,11 +113,14 @@ const Navbar = () => {
               </Button>
             )}
 
+            {/* Theme Toggle */}
+            <ThemeToggle />
+
             <Link to="/cart" className="relative">
               <Button variant="ghost" size="icon">
                 <ShoppingCart className="h-5 w-5" />
                 {cartItemsCount > 0 && (
-                  <span className="absolute top-0 right-0 bg-robo-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                  <span className="absolute top-0 right-0 bg-primary text-primary-foreground text-xs rounded-full h-5 w-5 flex items-center justify-center">
                     {cartItemsCount}
                   </span>
                 )}
@@ -127,7 +131,7 @@ const Navbar = () => {
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className="rounded-full">
                   <Avatar className="h-8 w-8">
-                    <AvatarFallback className="bg-robo-100 text-robo-800">
+                    <AvatarFallback className="bg-muted text-foreground">
                       U
                     </AvatarFallback>
                   </Avatar>
@@ -167,35 +171,35 @@ const Navbar = () => {
             <nav className="flex flex-col space-y-4">
               <Link
                 to="/"
-                className="text-sm font-medium text-robo-900 hover:text-robo-600 transition-colors"
+                className="text-sm font-medium text-foreground hover:text-primary transition-colors"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 Home
               </Link>
               <Link
                 to="/products"
-                className="text-sm font-medium text-robo-900 hover:text-robo-600 transition-colors"
+                className="text-sm font-medium text-foreground hover:text-primary transition-colors"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 Products
               </Link>
               <Link
                 to="/about"
-                className="text-sm font-medium text-robo-900 hover:text-robo-600 transition-colors"
+                className="text-sm font-medium text-foreground hover:text-primary transition-colors"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 About
               </Link>
               <Link
                 to="/contact"
-                className="text-sm font-medium text-robo-900 hover:text-robo-600 transition-colors"
+                className="text-sm font-medium text-foreground hover:text-primary transition-colors"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 Contact
               </Link>
               <Link
                 to="/ai-assistant"
-                className="text-sm font-medium text-robo-600 hover:text-robo-700 transition-colors"
+                className="text-sm font-medium text-primary hover:text-primary/80 transition-colors"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 AI Assistant

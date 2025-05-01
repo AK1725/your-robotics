@@ -44,10 +44,10 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
     >
       <div className="p-4 h-full overflow-auto">
         <div className="flex justify-between items-center mb-6">
-          <h2 className="font-semibold text-lg text-robo-900">Filters</h2>
+          <h2 className="font-semibold text-lg text-foreground">Filters</h2>
           <button
             onClick={onClose}
-            className="md:hidden text-robo-600 hover:text-robo-800"
+            className="md:hidden text-primary hover:text-primary/80"
           >
             ×
           </button>
@@ -56,7 +56,7 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
         <div className="space-y-6">
           {/* Price Range */}
           <div>
-            <h3 className="font-medium mb-3 text-robo-900">Price Range</h3>
+            <h3 className="font-medium mb-3 text-foreground">Price Range</h3>
             <Slider
               defaultValue={[0, 1000]}
               max={1000}
@@ -151,7 +151,7 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
 
           {/* Availability */}
           <div>
-            <h3 className="font-medium mb-3 text-robo-900">Availability</h3>
+            <h3 className="font-medium mb-3 text-foreground">Availability</h3>
             <div className="space-y-2">
               <div className="flex items-center space-x-2">
                 <Checkbox id="in-stock" />
