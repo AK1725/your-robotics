@@ -44,7 +44,7 @@ const Navbar = () => {
               <img
                 src="/lovable-uploads/e168059f-d7cb-44ef-bdd9-1b9839d3ae03.png"
                 alt="YourRobotics Logo"
-                className="h-16 md:h-20 dark:invert"
+                className="h-24 w-[250px] object-contain dark:invert"
               />
             </Link>
           </div>
