@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { ShoppingCart, User, Menu, Search, X } from "lucide-react";
+import { ShoppingCart, Menu, Search, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
@@ -75,13 +75,13 @@ const Navbar = () => {
             </Button>
           </div>
 
-          {/* Logo */}
+          {/* Logo - Updated dimensions */}
           <div className="flex items-center">
             <Link to="/" className="flex items-center">
               <img
                 src="/lovable-uploads/e168059f-d7cb-44ef-bdd9-1b9839d3ae03.png"
                 alt="YourRobotics Logo"
-                className="h-24 w-[250px] object-contain dark:invert"
+                className="h-10 w-[240px] object-contain dark:invert"
               />
             </Link>
           </div>
