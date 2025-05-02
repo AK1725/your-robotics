@@ -2,7 +2,14 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -18,9 +25,7 @@ const Login = () => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
@@ -32,22 +37,34 @@ const Login = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
+
     // Simulate API call
     setTimeout(() => {
-      // Store user info in localStorage for demonstration purposes
+      // Check if email exists in localStorage for demonstration purposes
       // In a real app, you would use proper authentication
-      localStorage.setItem("email", formData.email);
+      const storedEmail = localStorage.getItem("email");
       
-      toast({
-        title: "Logged in successfully!",
-        description: "Welcome back to YourRobotics.",
-      });
+      if (storedEmail === formData.email) {
+        // Get user details (in a real app, this would be from an API)
+        const firstName = localStorage.getItem("firstName") || "";
+        const lastName = localStorage.getItem("lastName") || "";
+        
+        toast({
+          title: "Login successful!",
+          description: `Welcome back, ${firstName}!`,
+        });
+        
+        // Redirect to the home page after successful login
+        navigate("/");
+      } else {
+        toast({
+          title: "Login failed",
+          description: "Invalid email or password.",
+          variant: "destructive",
+        });
+      }
       
       setIsSubmitting(false);
-      
-      // Redirect to home page after successful login
-      navigate("/");
     }, 1500);
   };
 
@@ -55,9 +72,11 @@ const Login = () => {
     <div className="container-custom py-12 max-w-md">
       <Card className="border-robo-200 shadow-lg">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold text-center">Login</CardTitle>
+          <CardTitle className="text-2xl font-bold text-center">
+            Sign In
+          </CardTitle>
           <CardDescription className="text-center">
-            Sign in to your YourRobotics account
+            Enter your credentials to access your account
           </CardDescription>
         </CardHeader>
         <form onSubmit={handleSubmit}>
@@ -79,7 +98,7 @@ const Login = () => {
                 <Label htmlFor="password">Password</Label>
                 <Link
                   to="/forgot-password"
-                  className="text-sm text-robo-600 hover:text-robo-800"
+                  className="text-sm text-robo-600 hover:text-robo-800 font-semibold"
                 >
                   Forgot Password?
                 </Link>
@@ -96,11 +115,11 @@ const Login = () => {
             </div>
             <div className="flex items-center space-x-2">
               <Checkbox
-                id="remember-me"
+                id="remember"
                 checked={formData.rememberMe}
                 onCheckedChange={handleCheckboxChange}
               />
-              <Label htmlFor="remember-me" className="text-sm">
+              <Label htmlFor="remember" className="text-sm">
                 Remember me
               </Label>
             </div>
@@ -111,7 +130,7 @@ const Login = () => {
               className="w-full bg-robo-600 hover:bg-robo-700"
               disabled={isSubmitting}
             >
-              {isSubmitting ? "Signing in..." : "Sign In"}
+              {isSubmitting ? "Signing In..." : "Sign In"}
             </Button>
             <div className="text-center text-sm">
               Don't have an account?{" "}
@@ -119,7 +138,7 @@ const Login = () => {
                 to="/register"
                 className="text-robo-600 hover:text-robo-800 font-semibold"
               >
-                Sign up
+                Create Account
               </Link>
             </div>
           </CardFooter>

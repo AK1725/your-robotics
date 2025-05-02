@@ -57,6 +57,16 @@ const Register = () => {
         setPasswordError("");
       }
     }
+
+    // Check email again when changing
+    if (name === "email") {
+      const existingEmail = localStorage.getItem("email");
+      if (existingEmail === value) {
+        setEmailError("The Account Already Exists");
+      } else {
+        setEmailError("");
+      }
+    }
   };
 
   const handleCheckboxChange = (checked: boolean) => {
@@ -90,6 +100,18 @@ const Register = () => {
     }
     
     setIsSubmitting(true);
+    
+    // Check email existence again before submission
+    const existingEmail = localStorage.getItem("email");
+    if (existingEmail === formData.email) {
+      toast({
+        title: "Registration Failed",
+        description: "The Account Already Exists",
+        variant: "destructive",
+      });
+      setIsSubmitting(false);
+      return;
+    }
     
     // Simulate API call
     setTimeout(() => {

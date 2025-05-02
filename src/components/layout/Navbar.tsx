@@ -11,6 +11,8 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  DropdownMenuLabel,
+  DropdownMenuGroup,
 } from "@/components/ui/dropdown-menu";
 import { ThemeToggle } from "../theme/ThemeToggle";
 
@@ -21,6 +23,7 @@ const Navbar = () => {
   const location = useLocation();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userInitial, setUserInitial] = useState("U");
+  const [userName, setUserName] = useState("");
 
   useEffect(() => {
     const email = localStorage.getItem("email");
@@ -29,6 +32,7 @@ const Navbar = () => {
       setIsLoggedIn(true);
       if (firstName) {
         setUserInitial(firstName.charAt(0).toUpperCase());
+        setUserName(firstName);
       }
     } else {
       setIsLoggedIn(false);
@@ -161,26 +165,44 @@ const Navbar = () => {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
-                <div className="flex flex-col space-y-1 p-2">
-                  <p className="text-sm font-medium">Account</p>
-                  <p className="text-xs text-muted-foreground">
-                    Manage your account
-                  </p>
-                </div>
-                <DropdownMenuSeparator />
                 {isLoggedIn ? (
                   <>
-                    <DropdownMenuItem asChild>
-                      <Link to="/profile" className="cursor-pointer w-full">
-                        Profile
-                      </Link>
-                    </DropdownMenuItem>
+                    <DropdownMenuLabel className="font-normal">
+                      <div className="flex flex-col space-y-1">
+                        <p className="text-sm font-medium leading-none">{userName}</p>
+                        <p className="text-xs leading-none text-muted-foreground">
+                          {localStorage.getItem("email")}
+                        </p>
+                      </div>
+                    </DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuGroup>
+                      <DropdownMenuItem asChild>
+                        <Link to="/profile" className="cursor-pointer w-full">
+                          <span className="font-medium">Account</span>
+                          <span className="ml-2 text-xs text-muted-foreground">Manage your account</span>
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link to="/profile" className="cursor-pointer w-full">Profile</Link>
+                      </DropdownMenuItem>
+                    </DropdownMenuGroup>
+                    <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={handleLogout} className="cursor-pointer">
                       Sign out
                     </DropdownMenuItem>
                   </>
                 ) : (
                   <>
+                    <DropdownMenuLabel>
+                      <div className="flex flex-col space-y-1">
+                        <p className="text-sm font-medium">Account</p>
+                        <p className="text-xs text-muted-foreground">
+                          Sign in to access your account
+                        </p>
+                      </div>
+                    </DropdownMenuLabel>
+                    <DropdownMenuSeparator />
                     <DropdownMenuItem asChild>
                       <Link to="/login" className="cursor-pointer w-full">
                         Sign in
