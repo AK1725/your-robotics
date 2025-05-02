@@ -5,14 +5,12 @@
   "description": "",
   "main": "server.mjs",
   "scripts": {
-  "start": "node server.mjs",
-  "dev": "nodemon server.mjs"
-},
-
+    "start": "node server.mjs",
+    "dev": "nodemon server.mjs"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  
   "dependencies": {
     "bcryptjs": "^3.0.2",
     "cors": "^2.8.5",
