@@ -1,6 +1,6 @@
 
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
 import { ShoppingCart, User, Menu, Search, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -18,6 +18,39 @@ const Navbar = () => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const cartItemsCount = 0; // This will be dynamic in the future
+  const location = useLocation();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userInitial, setUserInitial] = useState("U");
+
+  useEffect(() => {
+    const email = localStorage.getItem("email");
+    const firstName = localStorage.getItem("firstName");
+    if (email) {
+      setIsLoggedIn(true);
+      if (firstName) {
+        setUserInitial(firstName.charAt(0).toUpperCase());
+      }
+    } else {
+      setIsLoggedIn(false);
+    }
+  }, [location.pathname]);
+
+  const handleLogout = () => {
+    localStorage.removeItem("email");
+    localStorage.removeItem("firstName");
+    localStorage.removeItem("lastName");
+    setIsLoggedIn(false);
+    // No need to redirect, the useEffect will update the UI
+  };
+
+  // Define the navigation links with their paths
+  const navLinks = [
+    { name: "Home", path: "/" },
+    { name: "Products", path: "/products" },
+    { name: "About", path: "/about" },
+    { name: "Contact", path: "/contact" },
+    { name: "AI Assistant", path: "/ai-assistant" },
+  ];
 
   return (
     <header className="sticky top-0 z-40 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b">
@@ -51,36 +84,26 @@ const Navbar = () => {
 
           {/* Navigation - Desktop */}
           <nav className="hidden md:flex items-center space-x-4 lg:space-x-6">
-            <Link
-              to="/"
-              className="text-sm font-medium text-foreground hover:text-primary transition-colors"
-            >
-              Home
-            </Link>
-            <Link
-              to="/products"
-              className="text-sm font-medium text-foreground hover:text-primary transition-colors"
-            >
-              Products
-            </Link>
-            <Link
-              to="/about"
-              className="text-sm font-medium text-foreground hover:text-primary transition-colors"
-            >
-              About
-            </Link>
-            <Link
-              to="/contact"
-              className="text-sm font-medium text-foreground hover:text-primary transition-colors"
-            >
-              Contact
-            </Link>
-            <Link
-              to="/ai-assistant"
-              className="text-sm font-medium text-primary hover:text-primary/80 transition-colors"
-            >
-              AI Assistant
-            </Link>
+            {navLinks.map(link => (
+              <Link
+                key={link.path}
+                to={link.path}
+                className={`text-sm font-medium transition-colors relative group ${
+                  location.pathname === link.path 
+                    ? "text-primary" 
+                    : "text-foreground hover:text-primary"
+                }`}
+              >
+                {link.name}
+                <span 
+                  className={`absolute left-0 bottom-[-4px] h-[2px] bg-primary transition-all duration-300 ${
+                    location.pathname === link.path 
+                      ? "w-full" 
+                      : "w-0 group-hover:w-full"
+                  }`}
+                ></span>
+              </Link>
+            ))}
           </nav>
 
           {/* Search, Cart, User, Theme Toggle */}
@@ -131,8 +154,8 @@ const Navbar = () => {
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className="rounded-full">
                   <Avatar className="h-8 w-8">
-                    <AvatarFallback className="bg-muted text-foreground">
-                      U
+                    <AvatarFallback className="bg-primary text-primary-foreground">
+                      {userInitial}
                     </AvatarFallback>
                   </Avatar>
                 </Button>
@@ -145,16 +168,31 @@ const Navbar = () => {
                   </p>
                 </div>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
-                  <Link to="/login" className="cursor-pointer w-full">
-                    Sign in
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link to="/register" className="cursor-pointer w-full">
-                    Register
-                  </Link>
-                </DropdownMenuItem>
+                {isLoggedIn ? (
+                  <>
+                    <DropdownMenuItem asChild>
+                      <Link to="/profile" className="cursor-pointer w-full">
+                        Profile
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={handleLogout} className="cursor-pointer">
+                      Sign out
+                    </DropdownMenuItem>
+                  </>
+                ) : (
+                  <>
+                    <DropdownMenuItem asChild>
+                      <Link to="/login" className="cursor-pointer w-full">
+                        Sign in
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link to="/register" className="cursor-pointer w-full">
+                        Register
+                      </Link>
+                    </DropdownMenuItem>
+                  </>
+                )}
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
@@ -169,41 +207,20 @@ const Navbar = () => {
               <Input type="search" placeholder="Search products..." />
             </div>
             <nav className="flex flex-col space-y-4">
-              <Link
-                to="/"
-                className="text-sm font-medium text-foreground hover:text-primary transition-colors"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Home
-              </Link>
-              <Link
-                to="/products"
-                className="text-sm font-medium text-foreground hover:text-primary transition-colors"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Products
-              </Link>
-              <Link
-                to="/about"
-                className="text-sm font-medium text-foreground hover:text-primary transition-colors"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                About
-              </Link>
-              <Link
-                to="/contact"
-                className="text-sm font-medium text-foreground hover:text-primary transition-colors"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Contact
-              </Link>
-              <Link
-                to="/ai-assistant"
-                className="text-sm font-medium text-primary hover:text-primary/80 transition-colors"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                AI Assistant
-              </Link>
+              {navLinks.map(link => (
+                <Link
+                  key={link.path}
+                  to={link.path}
+                  className={`text-sm font-medium relative ${
+                    location.pathname === link.path 
+                      ? "text-primary border-l-2 border-primary pl-2" 
+                      : "text-foreground hover:text-primary hover:border-l-2 hover:border-primary hover:pl-2 transition-all duration-300"
+                  }`}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  {link.name}
+                </Link>
+              ))}
             </nav>
           </div>
         </div>

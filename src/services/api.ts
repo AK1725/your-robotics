@@ -14,7 +14,9 @@ export const convertToTaka = (usdPrice: number): number => {
 
 // Format price with currency symbol
 export const formatPrice = (price: number, currency: string = "৳"): string => {
-  return `${currency}${price.toLocaleString()}`;
+  // Always convert to taka
+  const takaPrice = convertToTaka(price);
+  return `${currency}${takaPrice.toLocaleString()}`;
 };
 
 export default api;

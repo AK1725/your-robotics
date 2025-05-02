@@ -47,7 +47,7 @@ const Login = () => {
       setIsSubmitting(false);
       
       // Redirect to home page after successful login
-      navigate("/profile");
+      navigate("/");
     }, 1500);
   };
 

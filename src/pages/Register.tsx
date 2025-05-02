@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
@@ -28,6 +28,19 @@ const Register = () => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [passwordError, setPasswordError] = useState("");
+  const [emailError, setEmailError] = useState("");
+
+  // Check if email already exists
+  useEffect(() => {
+    if (formData.email) {
+      const existingEmail = localStorage.getItem("email");
+      if (existingEmail === formData.email) {
+        setEmailError("The Account Already Exists");
+      } else {
+        setEmailError("");
+      }
+    }
+  }, [formData.email]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -57,6 +70,15 @@ const Register = () => {
       setPasswordError("Passwords don't match");
       return;
     }
+
+    if (emailError) {
+      toast({
+        title: "Registration Failed",
+        description: emailError,
+        variant: "destructive",
+      });
+      return;
+    }
     
     if (!formData.agreeToTerms) {
       toast({
@@ -84,8 +106,8 @@ const Register = () => {
       
       setIsSubmitting(false);
       
-      // Redirect to profile page after successful registration
-      navigate("/profile");
+      // Redirect to home page after successful registration
+      navigate("/");
     }, 1500);
   };
 
@@ -136,7 +158,11 @@ const Register = () => {
                 value={formData.email}
                 onChange={handleChange}
                 required
+                className={emailError ? "border-red-500" : ""}
               />
+              {emailError && (
+                <p className="text-sm text-red-600">{emailError}</p>
+              )}
             </div>
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
@@ -194,7 +220,7 @@ const Register = () => {
             <Button
               type="submit"
               className="w-full bg-robo-600 hover:bg-robo-700"
-              disabled={isSubmitting || !!passwordError}
+              disabled={isSubmitting || !!passwordError || !!emailError}
             >
               {isSubmitting ? "Creating Account..." : "Create Account"}
             </Button>
