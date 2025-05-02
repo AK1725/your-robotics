@@ -75,13 +75,13 @@ const Navbar = () => {
             </Button>
           </div>
 
-          {/* Logo - Updated dimensions */}
+          {/* Logo - Increased size to fill the box */}
           <div className="flex items-center">
             <Link to="/" className="flex items-center">
               <img
                 src="/lovable-uploads/e168059f-d7cb-44ef-bdd9-1b9839d3ae03.png"
                 alt="YourRobotics Logo"
-                className="h-10 w-[240px] object-contain dark:invert"
+                className="h-14 w-[280px] object-contain dark:invert"
               />
             </Link>
           </div>

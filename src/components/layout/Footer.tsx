@@ -15,7 +15,7 @@ const Footer = () => {
               <img
                 src="/lovable-uploads/e168059f-d7cb-44ef-bdd9-1b9839d3ae03.png"
                 alt="YourRobotics Logo"
-                className="h-10 w-[240px] object-contain invert"
+                className="h-16 w-[320px] object-contain invert"
               />
             </Link>
             <p className="text-robo-100">
