@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -17,6 +17,7 @@ import { useToast } from "@/hooks/use-toast";
 
 const Register = () => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -70,12 +71,21 @@ const Register = () => {
     
     // Simulate API call
     setTimeout(() => {
+      // Store user info in localStorage for demonstration purposes
+      // In a real app, you would use proper authentication
+      localStorage.setItem("email", formData.email);
+      localStorage.setItem("firstName", formData.firstName);
+      localStorage.setItem("lastName", formData.lastName);
+      
       toast({
         title: "Registration successful!",
         description: "Your account has been created.",
       });
+      
       setIsSubmitting(false);
-      // In a real app, you would redirect or update auth state here
+      
+      // Redirect to profile page after successful registration
+      navigate("/profile");
     }, 1500);
   };
 

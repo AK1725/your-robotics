@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -10,6 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 
 const Login = () => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -34,12 +35,19 @@ const Login = () => {
     
     // Simulate API call
     setTimeout(() => {
+      // Store user info in localStorage for demonstration purposes
+      // In a real app, you would use proper authentication
+      localStorage.setItem("email", formData.email);
+      
       toast({
         title: "Logged in successfully!",
         description: "Welcome back to YourRobotics.",
       });
+      
       setIsSubmitting(false);
-      // In a real app, you would redirect or update auth state here
+      
+      // Redirect to home page after successful login
+      navigate("/profile");
     }, 1500);
   };
 

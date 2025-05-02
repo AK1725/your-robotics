@@ -18,6 +18,7 @@ import Register from "./pages/Register";
 import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
 import NotFound from "./pages/NotFound";
+import Profile from "./pages/Profile";
 
 // Layout
 import Navbar from "./components/layout/Navbar";
@@ -45,6 +46,7 @@ const App = () => {
                   <Route path="/contact" element={<Contact />} />
                   <Route path="/login" element={<Login />} />
                   <Route path="/register" element={<Register />} />
+                  <Route path="/profile" element={<Profile />} />
                   <Route path="/cart" element={<Cart />} />
                   <Route path="/checkout" element={<Checkout />} />
                   <Route path="*" element={<NotFound />} />
