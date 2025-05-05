@@ -13,6 +13,7 @@ import {
   CommandSeparator,
 } from "@/components/ui/command";
 import { Button } from "@/components/ui/button";
+import { DialogTitle } from "@/components/ui/dialog";
 
 // Define the product data structure
 interface Product {
@@ -174,21 +175,20 @@ export function SearchCommand({ isOpen, setIsOpen }: { isOpen: boolean; setIsOpe
 
   return (
     <CommandDialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogTitle className="sr-only">Search</DialogTitle>
       <div className="flex items-center border-b px-3">
         <SearchIcon className="mr-2 h-4 w-4 shrink-0 opacity-50" />
-        <Command className="flex h-full w-full flex-col overflow-hidden rounded-md bg-popover text-popover-foreground">
-          <CommandInput 
-            placeholder="Search for products, categories..." 
-            value={searchQuery}
-            onValueChange={setSearchQuery}
-            className="h-11 w-full rounded-md bg-transparent py-3 text-sm outline-none placeholder:text-muted-foreground"
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                handleSubmitSearch();
-              }
-            }}
-          />
-        </Command>
+        <CommandInput 
+          placeholder="Search for products, categories..." 
+          value={searchQuery}
+          onValueChange={setSearchQuery}
+          className="h-11 w-full rounded-md bg-transparent py-3 text-sm outline-none placeholder:text-muted-foreground"
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              handleSubmitSearch();
+            }
+          }}
+        />
         {searchQuery && (
           <Button
             variant="ghost"
