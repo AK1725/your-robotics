@@ -15,10 +15,12 @@ import {
   DropdownMenuGroup,
 } from "@/components/ui/dropdown-menu";
 import { ThemeToggle } from "../theme/ThemeToggle";
+import { SearchCommand } from "./SearchCommand";
 
 const Navbar = () => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isCommandOpen, setIsCommandOpen] = useState(false);
   const cartItemsCount = 0; // This will be dynamic in the future
   const location = useLocation();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -38,6 +40,23 @@ const Navbar = () => {
       setIsLoggedIn(false);
     }
   }, [location.pathname]);
+
+  // Handle keyboard shortcut for search
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Open search on '/' or Ctrl+K/Command+K
+      if (
+        (e.key === '/' || ((e.ctrlKey || e.metaKey) && e.key === 'k')) && 
+        !e.defaultPrevented
+      ) {
+        e.preventDefault();
+        setIsCommandOpen(true);
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem("email");
@@ -112,33 +131,21 @@ const Navbar = () => {
 
           {/* Search, Cart, User, Theme Toggle */}
           <div className="flex items-center space-x-2">
-            {isSearchOpen ? (
-              <div className="absolute inset-x-0 top-0 bg-background z-50 flex items-center h-16 px-4 md:px-6 lg:relative lg:inset-auto lg:bg-transparent">
-                <Input
-                  type="search"
-                  placeholder="Search products..."
-                  className="flex-1 max-w-md"
-                  autoFocus
-                />
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setIsSearchOpen(false)}
-                  className="ml-2"
-                >
-                  <X className="h-5 w-5" />
-                </Button>
-              </div>
-            ) : (
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setIsSearchOpen(true)}
-                className="hidden md:flex"
-              >
-                <Search className="h-5 w-5" />
-              </Button>
-            )}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setIsCommandOpen(true)}
+              className="relative"
+              aria-label="Search"
+            >
+              <Search className="h-5 w-5" />
+              <kbd className="pointer-events-none absolute right-1.5 top-1.5 hidden h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex">
+                <span className="text-xs">⌘</span>K
+              </kbd>
+            </Button>
+
+            {/* SearchCommand dialog */}
+            <SearchCommand isOpen={isCommandOpen} setIsOpen={setIsCommandOpen} />
 
             {/* Theme Toggle */}
             <ThemeToggle />
@@ -226,7 +233,14 @@ const Navbar = () => {
         <div className="md:hidden border-t animate-fade-in">
           <div className="container-custom py-4">
             <div className="mb-4">
-              <Input type="search" placeholder="Search products..." />
+              <Input 
+                type="search" 
+                placeholder="Search products..." 
+                onClick={() => {
+                  setIsMobileMenuOpen(false);
+                  setIsCommandOpen(true);
+                }}
+              />
             </div>
             <nav className="flex flex-col space-y-4">
               {navLinks.map(link => (
