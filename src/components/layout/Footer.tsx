@@ -15,13 +15,13 @@ const Footer = () => {
               <img
                 src="/lovable-uploads/e168059f-d7cb-44ef-bdd9-1b9839d3ae03.png"
                 alt="YourRobotics Logo"
-                className="h-16 w-[320px] object-contain invert"
+                className="h-[200px] w-auto transform translate-y 50 dark:invert"
               />
             </Link>
             <p className="text-robo-100">
               Providing cutting-edge robotics components for enthusiasts and professionals.
             </p>
-            <div className="flex space-x-4">
+            <div className="flex space-x-4 transform translate-y +20">
               <a href="#" className="text-robo-100 hover:text-white">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"

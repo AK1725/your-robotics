@@ -45,7 +45,7 @@ const Navbar = () => {
     const handleKeyDown = (e: KeyboardEvent) => {
       // Open search on '/' or Ctrl+K/Command+K
       if (
-        (e.key === '/' || ((e.ctrlKey || e.metaKey) && e.key === 'k')) && 
+        (e.key === "/" || ((e.ctrlKey || e.metaKey) && e.key === "k")) &&
         !e.defaultPrevented
       ) {
         e.preventDefault();
@@ -62,7 +62,7 @@ const Navbar = () => {
     localStorage.removeItem("firstName");
     localStorage.removeItem("lastName");
     setIsLoggedIn(false);
-    // No need to redirect, the useEffect will update the UI
+    // UI auto-updates via the effect on pathname
   };
 
   // Define the navigation links with their paths
@@ -77,7 +77,8 @@ const Navbar = () => {
   return (
     <header className="sticky top-0 z-40 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b">
       <div className="container-custom">
-        <div className="relative flex h-16 items-center justify-between">
+        {/* ↑ increased height from h-16 to h-20 */}
+        <div className="relative flex h-20 items-center justify-between">
           {/* Mobile menu button */}
           <div className="md:hidden flex items-center">
             <Button
@@ -93,34 +94,33 @@ const Navbar = () => {
             </Button>
           </div>
 
-          {/* Logo - Increased size to fill the box */}
           <div className="flex items-center">
             <Link to="/" className="flex items-center">
               <img
                 src="/lovable-uploads/e168059f-d7cb-44ef-bdd9-1b9839d3ae03.png"
                 alt="YourRobotics Logo"
-                className="h-14 w-[280px] object-contain dark:invert"
+                className="h-[200px] w-auto transform translate-y-4 dark:invert"
               />
             </Link>
           </div>
 
           {/* Navigation - Desktop */}
-          <nav className="hidden md:flex items-center space-x-4 lg:space-x-6">
-            {navLinks.map(link => (
+          <nav className="hidden md:flex items-center space-x-6 lg:space-x-8">
+            {navLinks.map((link) => (
               <Link
                 key={link.path}
                 to={link.path}
-                className={`text-sm font-medium transition-colors relative group ${
-                  location.pathname === link.path 
-                    ? "text-primary" 
+                className={`text-lg font-medium transition-colors relative group ${
+                  location.pathname === link.path
+                    ? "text-primary"
                     : "text-foreground hover:text-primary"
                 }`}
               >
                 {link.name}
-                <span 
+                <span
                   className={`absolute left-0 bottom-[-4px] h-[2px] bg-primary transition-all duration-300 ${
-                    location.pathname === link.path 
-                      ? "w-full" 
+                    location.pathname === link.path
+                      ? "w-full"
                       : "w-0 group-hover:w-full"
                   }`}
                 ></span>
@@ -141,7 +141,10 @@ const Navbar = () => {
             </Button>
 
             {/* SearchCommand dialog */}
-            <SearchCommand isOpen={isCommandOpen} setIsOpen={setIsCommandOpen} />
+            <SearchCommand
+              isOpen={isCommandOpen}
+              setIsOpen={setIsCommandOpen}
+            />
 
             {/* Theme Toggle */}
             <ThemeToggle />
@@ -172,7 +175,9 @@ const Navbar = () => {
                   <>
                     <DropdownMenuLabel className="font-normal">
                       <div className="flex flex-col space-y-1">
-                        <p className="text-sm font-medium leading-none">{userName}</p>
+                        <p className="text-sm font-medium leading-none">
+                          {userName}
+                        </p>
                         <p className="text-xs leading-none text-muted-foreground">
                           {localStorage.getItem("email")}
                         </p>
@@ -181,17 +186,30 @@ const Navbar = () => {
                     <DropdownMenuSeparator />
                     <DropdownMenuGroup>
                       <DropdownMenuItem asChild>
-                        <Link to="/profile" className="cursor-pointer w-full">
+                        <Link
+                          to="/profile"
+                          className="cursor-pointer w-full"
+                        >
                           <span className="font-medium">Account</span>
-                          <span className="ml-2 text-xs text-muted-foreground">Manage your account</span>
+                          <span className="ml-2 text-xs text-muted-foreground">
+                            Manage your account
+                          </span>
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
-                        <Link to="/profile" className="cursor-pointer w-full">Profile</Link>
+                        <Link
+                          to="/profile"
+                          className="cursor-pointer w-full"
+                        >
+                          Profile
+                        </Link>
                       </DropdownMenuItem>
                     </DropdownMenuGroup>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={handleLogout} className="cursor-pointer">
+                    <DropdownMenuItem
+                      onClick={handleLogout}
+                      className="cursor-pointer"
+                    >
                       Sign out
                     </DropdownMenuItem>
                   </>
@@ -207,12 +225,18 @@ const Navbar = () => {
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem asChild>
-                      <Link to="/login" className="cursor-pointer w-full">
+                      <Link
+                        to="/login"
+                        className="cursor-pointer w-full"
+                      >
                         Sign in
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
-                      <Link to="/register" className="cursor-pointer w-full">
+                      <Link
+                        to="/register"
+                        className="cursor-pointer w-full"
+                      >
                         Register
                       </Link>
                     </DropdownMenuItem>
@@ -229,9 +253,9 @@ const Navbar = () => {
         <div className="md:hidden border-t animate-fade-in">
           <div className="container-custom py-4">
             <div className="mb-4">
-              <Input 
-                type="search" 
-                placeholder="Search products..." 
+              <Input
+                type="search"
+                placeholder="Search products..."
                 onClick={() => {
                   setIsMobileMenuOpen(false);
                   setIsCommandOpen(true);
@@ -239,13 +263,13 @@ const Navbar = () => {
               />
             </div>
             <nav className="flex flex-col space-y-4">
-              {navLinks.map(link => (
+              {navLinks.map((link) => (
                 <Link
                   key={link.path}
                   to={link.path}
-                  className={`text-sm font-medium relative ${
-                    location.pathname === link.path 
-                      ? "text-primary border-l-2 border-primary pl-2" 
+                  className={`text-lg font-medium relative ${
+                    location.pathname === link.path
+                      ? "text-primary border-l-2 border-primary pl-2"
                       : "text-foreground hover:text-primary hover:border-l-2 hover:border-primary hover:pl-2 transition-all duration-300"
                   }`}
                   onClick={() => setIsMobileMenuOpen(false)}
