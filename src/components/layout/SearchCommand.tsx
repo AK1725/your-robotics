@@ -68,27 +68,6 @@ const sampleProducts: Product[] = [
     price: 24.99,
     path: "/products/5",
   },
-  {
-    id: 6,
-    name: "DC Motor",
-    category: "Motors & Actuators",
-    price: 8.99,
-    path: "/products/6",
-  },
-  {
-    id: 7,
-    name: "Infrared Sensor",
-    category: "Sensors",
-    price: 5.99,
-    path: "/products/7",
-  },
-  {
-    id: 8,
-    name: "LED Matrix",
-    category: "Components",
-    price: 12.99,
-    path: "/products/8",
-  },
 ];
 
 // Sample categories
@@ -97,8 +76,12 @@ const categories: Category[] = [
   { id: "motors", name: "Motors & Actuators", path: "/products/motors" },
   { id: "sensors", name: "Sensors", path: "/products/sensors" },
   { id: "development-kits", name: "Development Kits", path: "/products/development-kits" },
-  { id: "components", name: "Components", path: "/products/components" },
 ];
+
+// Check if a product ID exists in our sample data
+const productExists = (id: number): boolean => {
+  return sampleProducts.some(product => product.id === id);
+};
 
 // The main search command component
 export function SearchCommand({ isOpen, setIsOpen }: { isOpen: boolean; setIsOpen: (open: boolean) => void }) {
@@ -162,7 +145,19 @@ export function SearchCommand({ isOpen, setIsOpen }: { isOpen: boolean; setIsOpe
   const handleSubmitSearch = () => {
     if (searchQuery.trim()) {
       addToRecentSearches(searchQuery);
-      navigate(`/products?search=${encodeURIComponent(searchQuery)}`);
+      
+      // Check if the search query is a product ID
+      const productId = parseInt(searchQuery);
+      if (!isNaN(productId) && productExists(productId)) {
+        navigate(`/products/${productId}`);
+      } else if (filteredProducts.length > 0) {
+        // Navigate to the first product in filtered results
+        navigate(filteredProducts[0].path);
+      } else {
+        // Navigate to not found page if no matching products
+        navigate("/not-found", { state: { searchQuery } });
+      }
+      
       setIsOpen(false);
     }
   };
@@ -247,10 +242,13 @@ export function SearchCommand({ isOpen, setIsOpen }: { isOpen: boolean; setIsOpe
               <Button 
                 variant="secondary" 
                 size="sm" 
-                onClick={handleSubmitSearch}
+                onClick={() => {
+                  navigate("/not-found", { state: { searchQuery } });
+                  setIsOpen(false);
+                }}
                 className="mt-2"
               >
-                Search all products
+                View details
               </Button>
             </div>
           </CommandEmpty>
@@ -294,10 +292,19 @@ export function SearchCommand({ isOpen, setIsOpen }: { isOpen: boolean; setIsOpe
             {searchQuery && (
               <CommandGroup>
                 <CommandItem
-                  onSelect={handleSubmitSearch}
+                  onSelect={() => {
+                    if (filteredProducts.length === 0) {
+                      navigate("/not-found", { state: { searchQuery } });
+                    } else {
+                      handleSubmitSearch();
+                    }
+                    setIsOpen(false);
+                  }}
                   className="justify-center text-sm text-primary hover:text-primary"
                 >
-                  Search for "{searchQuery}" in all products
+                  {filteredProducts.length === 0 
+                    ? `No products found for "${searchQuery}"` 
+                    : `Search for "${searchQuery}" in all products`}
                 </CommandItem>
               </CommandGroup>
             )}

@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { ShoppingCart, Menu, Search, X } from "lucide-react";
@@ -139,9 +138,6 @@ const Navbar = () => {
               aria-label="Search"
             >
               <Search className="h-5 w-5" />
-              <kbd className="pointer-events-none absolute right-1.5 top-1.5 hidden h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex">
-                <span className="text-xs">⌘</span>K
-              </kbd>
             </Button>
 
             {/* SearchCommand dialog */}
