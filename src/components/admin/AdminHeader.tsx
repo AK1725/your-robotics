@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Bell, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -13,6 +13,34 @@ import {
 
 const AdminHeader: React.FC = () => {
   const navigate = useNavigate();
+  const [adminName, setAdminName] = useState('Admin User');
+  const [adminEmail, setAdminEmail] = useState('admin@yourrobotics.com');
+
+  useEffect(() => {
+    // Get user info from localStorage
+    const firstName = localStorage.getItem('firstName');
+    const email = localStorage.getItem('email');
+    
+    if (firstName) {
+      setAdminName(firstName);
+    }
+    
+    if (email) {
+      setAdminEmail(email);
+    }
+  }, []);
+
+  const handleLogout = () => {
+    // Clear all user data from localStorage
+    localStorage.removeItem('token');
+    localStorage.removeItem('email');
+    localStorage.removeItem('firstName');
+    localStorage.removeItem('lastName');
+    localStorage.removeItem('userRole');
+    
+    // Redirect to login page
+    navigate('/login');
+  };
 
   return (
     <header className="border-b border-border bg-background sticky top-0 z-10">
@@ -37,19 +65,19 @@ const AdminHeader: React.FC = () => {
                   <User className="h-5 w-5" />
                 </div>
                 <div className="flex flex-col space-y-0.5">
-                  <p className="text-sm font-medium">Admin User</p>
-                  <p className="text-xs text-muted-foreground">admin@yourrobotics.com</p>
+                  <p className="text-sm font-medium">{adminName}</p>
+                  <p className="text-xs text-muted-foreground">{adminEmail}</p>
                 </div>
               </div>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => navigate('/admin/profile')}>
+              <DropdownMenuItem onClick={() => navigate('/profile')}>
                 Profile
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => navigate('/admin/settings')}>
                 Settings
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => navigate('/logout')}>
+              <DropdownMenuItem onClick={handleLogout}>
                 Logout
               </DropdownMenuItem>
             </DropdownMenuContent>

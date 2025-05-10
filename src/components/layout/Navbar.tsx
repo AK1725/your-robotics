@@ -23,20 +23,26 @@ const Navbar = () => {
   const cartItemsCount = 0; // This will be dynamic in the future
   const location = useLocation();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [userInitial, setUserInitial] = useState("U");
   const [userName, setUserName] = useState("");
 
   useEffect(() => {
     const email = localStorage.getItem("email");
     const firstName = localStorage.getItem("firstName");
+    const userRole = localStorage.getItem("userRole");
+    
     if (email) {
       setIsLoggedIn(true);
+      setIsAdmin(userRole === "admin");
+      
       if (firstName) {
         setUserInitial(firstName.charAt(0).toUpperCase());
         setUserName(firstName);
       }
     } else {
       setIsLoggedIn(false);
+      setIsAdmin(false);
     }
   }, [location.pathname]);
 
@@ -61,7 +67,10 @@ const Navbar = () => {
     localStorage.removeItem("email");
     localStorage.removeItem("firstName");
     localStorage.removeItem("lastName");
+    localStorage.removeItem("token");
+    localStorage.removeItem("userRole");
     setIsLoggedIn(false);
+    setIsAdmin(false);
     // UI auto-updates via the effect on pathname
   };
 
@@ -77,7 +86,6 @@ const Navbar = () => {
   return (
     <header className="sticky top-0 z-40 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b">
       <div className="container-custom">
-        {/* ↑ increased height from h-16 to h-20 */}
         <div className="relative flex h-20 items-center justify-between">
           {/* Mobile menu button */}
           <div className="md:hidden flex items-center">
@@ -204,6 +212,16 @@ const Navbar = () => {
                           Profile
                         </Link>
                       </DropdownMenuItem>
+                      {isAdmin && (
+                        <DropdownMenuItem asChild>
+                          <Link
+                            to="/admin"
+                            className="cursor-pointer w-full"
+                          >
+                            Admin Dashboard
+                          </Link>
+                        </DropdownMenuItem>
+                      )}
                     </DropdownMenuGroup>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem
@@ -277,6 +295,19 @@ const Navbar = () => {
                   {link.name}
                 </Link>
               ))}
+              {isAdmin && (
+                <Link
+                  to="/admin"
+                  className={`text-lg font-medium relative ${
+                    location.pathname.startsWith('/admin')
+                      ? "text-primary border-l-2 border-primary pl-2"
+                      : "text-foreground hover:text-primary hover:border-l-2 hover:border-primary hover:pl-2 transition-all duration-300"
+                  }`}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Admin Dashboard
+                </Link>
+              )}
             </nav>
           </div>
         </div>

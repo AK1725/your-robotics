@@ -3,8 +3,9 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { ThemeProvider } from "./components/theme/ThemeProvider";
+import { useEffect, useState } from "react";
 
 // Pages
 import Index from "./pages/Index";
@@ -35,6 +36,18 @@ import Footer from "./components/layout/Footer";
 
 const queryClient = new QueryClient();
 
+// Admin route protection component
+const AdminRoute = ({ children }: { children: React.ReactNode }) => {
+  const token = localStorage.getItem("token");
+  const userRole = localStorage.getItem("userRole");
+  
+  if (!token || userRole !== "admin") {
+    return <Navigate to="/login" replace />;
+  }
+  
+  return <>{children}</>;
+};
+
 const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
@@ -46,7 +59,11 @@ const App = () => {
             
             <Routes>
               {/* Admin Routes */}
-              <Route path="/admin" element={<AdminLayout />}>
+              <Route path="/admin" element={
+                <AdminRoute>
+                  <AdminLayout />
+                </AdminRoute>
+              }>
                 <Route index element={<AdminDashboard />} />
                 <Route path="products" element={<AdminProducts />} />
                 <Route path="orders" element={<AdminOrders />} />

@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
+import axios from "axios";
 
 const Login = () => {
   const { toast } = useToast();
@@ -34,27 +35,51 @@ const Login = () => {
     setFormData((prev) => ({ ...prev, rememberMe: checked }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Simulate API call
-    setTimeout(() => {
-      // Check if email exists in localStorage for demonstration purposes
-      // In a real app, you would use proper authentication
+    try {
+      // In a real app, this would be an API call
+      const response = await axios.post('/api/auth/login', {
+        email: formData.email,
+        password: formData.password,
+      });
+      
+      const { token, user } = response.data;
+      
+      // Store token and user details
+      localStorage.setItem('token', token);
+      localStorage.setItem('email', user.email);
+      localStorage.setItem('firstName', user.name);
+      localStorage.setItem('userRole', user.role);
+      
+      toast({
+        title: "Login successful!",
+        description: `Welcome back, ${user.name}!`,
+      });
+      
+      // Redirect admin users to admin dashboard
+      if (user.role === 'admin') {
+        navigate('/admin');
+      } else {
+        // Regular users go to homepage
+        navigate('/');
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      
+      // Fallback to the existing localStorage check for demo purposes
       const storedEmail = localStorage.getItem("email");
       
       if (storedEmail === formData.email) {
-        // Get user details (in a real app, this would be from an API)
         const firstName = localStorage.getItem("firstName") || "";
-        const lastName = localStorage.getItem("lastName") || "";
         
         toast({
           title: "Login successful!",
           description: `Welcome back, ${firstName}!`,
         });
         
-        // Redirect to the home page after successful login
         navigate("/");
       } else {
         toast({
@@ -63,9 +88,9 @@ const Login = () => {
           variant: "destructive",
         });
       }
-      
+    } finally {
       setIsSubmitting(false);
-    }, 1500);
+    }
   };
 
   return (
