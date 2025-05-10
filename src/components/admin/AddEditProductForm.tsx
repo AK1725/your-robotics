@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -92,7 +91,8 @@ const AddEditProductForm: React.FC<AddEditProductFormProps> = ({ product, onSucc
     price: product?.price || 0,
     imageUrl: product?.imageUrl || '',
     category: product?.category || '',
-    tags: product?.tags?.join(', ') || '',
+    // Fix: Convert the tags array to a comma-separated string for the form
+    tags: product?.tags ? product.tags.join(', ') : '',
     stock: product?.stock || 0,
     isInStock: product?.isInStock ?? true,
     discount: {
