@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -45,6 +46,7 @@ interface Product {
     type: 'none' | 'percentage' | 'fixed';
     value: number;
   };
+  featured?: boolean;
 }
 
 const categories = [
@@ -59,21 +61,31 @@ const categories = [
   'Development Boards'
 ];
 
-// Fix: Modified the schema to properly handle string to string[] conversion for tags
+// Define the schema for form validation with the proper transformation for tags
 const productSchema = z.object({
   name: z.string().min(1, 'Product name is required'),
   description: z.string().min(1, 'Description is required'),
   price: z.coerce.number().min(0.01, 'Price must be greater than 0'),
   imageUrl: z.string().optional(),
   category: z.string().min(1, 'Category is required'),
-  tags: z.string().transform(val => val ? val.split(',').map(tag => tag.trim()) : []),
+  // For the form, tags is a string that gets transformed to string[]
+  tagsInput: z.string().default(''),
   stock: z.coerce.number().int().min(0, 'Stock cannot be negative'),
   isInStock: z.boolean().default(true),
   discount: z.object({
     type: z.enum(['none', 'percentage', 'fixed']),
     value: z.coerce.number().min(0, 'Discount value cannot be negative'),
   }),
-});
+})
+// Transform the form data to include tags as string[] for the API
+.transform((data) => {
+  return {
+    ...data,
+    tags: data.tagsInput ? data.tagsInput.split(',').map(tag => tag.trim()) : [],
+  };
+})
+// Remove the intermediate tagsInput field from the output
+.transform(({tagsInput, ...rest}) => rest);
 
 type ProductFormValues = z.infer<typeof productSchema>;
 
@@ -86,14 +98,14 @@ const AddEditProductForm: React.FC<AddEditProductFormProps> = ({ product, onSucc
   const isEditing = !!product;
   const queryClient = useQueryClient();
 
-  // Fix: Make sure tags is a string in the form values
-  const defaultValues: Partial<ProductFormValues> = {
+  // Create form defaultValues with tagsInput as a string (comma-separated)
+  const defaultValues = {
     name: product?.name || '',
     description: product?.description || '',
     price: product?.price || 0,
     imageUrl: product?.imageUrl || '',
     category: product?.category || '',
-    tags: product?.tags ? product.tags.join(', ') : '',
+    tagsInput: product?.tags ? product.tags.join(', ') : '',
     stock: product?.stock || 0,
     isInStock: product?.isInStock ?? true,
     discount: {
@@ -102,7 +114,7 @@ const AddEditProductForm: React.FC<AddEditProductFormProps> = ({ product, onSucc
     },
   };
 
-  const form = useForm<ProductFormValues>({
+  const form = useForm<any>({
     resolver: zodResolver(productSchema),
     defaultValues,
   });
@@ -220,7 +232,7 @@ const AddEditProductForm: React.FC<AddEditProductFormProps> = ({ product, onSucc
               
               <FormField
                 control={form.control}
-                name="tags"
+                name="tagsInput"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Tags</FormLabel>
