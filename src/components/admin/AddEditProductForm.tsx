@@ -59,13 +59,14 @@ const categories = [
   'Development Boards'
 ];
 
+// Fix: Modified the schema to properly handle string to string[] conversion for tags
 const productSchema = z.object({
   name: z.string().min(1, 'Product name is required'),
   description: z.string().min(1, 'Description is required'),
   price: z.coerce.number().min(0.01, 'Price must be greater than 0'),
   imageUrl: z.string().optional(),
   category: z.string().min(1, 'Category is required'),
-  tags: z.string().optional().transform(val => val ? val.split(',').map(tag => tag.trim()) : []),
+  tags: z.string().transform(val => val ? val.split(',').map(tag => tag.trim()) : []),
   stock: z.coerce.number().int().min(0, 'Stock cannot be negative'),
   isInStock: z.boolean().default(true),
   discount: z.object({
@@ -85,13 +86,13 @@ const AddEditProductForm: React.FC<AddEditProductFormProps> = ({ product, onSucc
   const isEditing = !!product;
   const queryClient = useQueryClient();
 
+  // Fix: Make sure tags is a string in the form values
   const defaultValues: Partial<ProductFormValues> = {
     name: product?.name || '',
     description: product?.description || '',
     price: product?.price || 0,
     imageUrl: product?.imageUrl || '',
     category: product?.category || '',
-    // Fix: Convert the tags array to a comma-separated string for the form
     tags: product?.tags ? product.tags.join(', ') : '',
     stock: product?.stock || 0,
     isInStock: product?.isInStock ?? true,
