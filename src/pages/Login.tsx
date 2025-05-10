@@ -40,7 +40,7 @@ const Login = () => {
     setIsSubmitting(true);
 
     try {
-      // In a real app, this would be an API call
+      // Make API call to login endpoint
       const response = await axios.post('/api/auth/login', {
         email: formData.email,
         password: formData.password,
@@ -59,35 +59,19 @@ const Login = () => {
         description: `Welcome back, ${user.name}!`,
       });
       
-      // Redirect admin users to admin dashboard
+      // Redirect based on user role
       if (user.role === 'admin') {
         navigate('/admin');
       } else {
-        // Regular users go to homepage
         navigate('/');
       }
     } catch (error) {
       console.error('Login error:', error);
-      
-      // Fallback to the existing localStorage check for demo purposes
-      const storedEmail = localStorage.getItem("email");
-      
-      if (storedEmail === formData.email) {
-        const firstName = localStorage.getItem("firstName") || "";
-        
-        toast({
-          title: "Login successful!",
-          description: `Welcome back, ${firstName}!`,
-        });
-        
-        navigate("/");
-      } else {
-        toast({
-          title: "Login failed",
-          description: "Invalid email or password.",
-          variant: "destructive",
-        });
-      }
+      toast({
+        title: "Login failed",
+        description: "Invalid email or password.",
+        variant: "destructive",
+      });
     } finally {
       setIsSubmitting(false);
     }

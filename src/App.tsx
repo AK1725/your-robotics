@@ -3,9 +3,10 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { ThemeProvider } from "./components/theme/ThemeProvider";
 import { useEffect, useState } from "react";
+import axios from "axios";
 
 // Pages
 import Index from "./pages/Index";
@@ -36,19 +37,68 @@ import Footer from "./components/layout/Footer";
 
 const queryClient = new QueryClient();
 
-// Admin route protection component
+// Admin route protection component with better token validation
 const AdminRoute = ({ children }: { children: React.ReactNode }) => {
-  const token = localStorage.getItem("token");
-  const userRole = localStorage.getItem("userRole");
+  const [isLoading, setIsLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const location = useLocation();
   
-  if (!token || userRole !== "admin") {
-    return <Navigate to="/login" replace />;
+  useEffect(() => {
+    const validateAdminAccess = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        
+        if (!token) {
+          setIsLoading(false);
+          return;
+        }
+        
+        // Add authorization header to requests
+        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+        
+        // Verify admin status with backend
+        const response = await axios.get('/api/auth/admin-check');
+        
+        if (response.data.user && response.data.user.role === 'admin') {
+          setIsAdmin(true);
+        }
+      } catch (error) {
+        console.error("Admin validation error:", error);
+        // Clear potentially invalid token
+        localStorage.removeItem('token');
+        localStorage.removeItem('userRole');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    validateAdminAccess();
+  }, []);
+  
+  if (isLoading) {
+    return <div className="flex items-center justify-center h-screen">Loading...</div>;
+  }
+  
+  if (!isAdmin) {
+    return <Navigate to="/login" state={{ from: location }} replace />;
   }
   
   return <>{children}</>;
 };
 
 const App = () => {
+  // Set default authorization header for all requests
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    }
+    
+    return () => {
+      delete axios.defaults.headers.common['Authorization'];
+    };
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider defaultTheme="system" storageKey="yourrobotics-theme">
