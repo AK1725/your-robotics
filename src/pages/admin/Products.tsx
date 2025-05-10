@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
@@ -36,6 +35,7 @@ interface Product {
   imageUrl: string;
   images: string[];
   category: string;
+  tags: string[];
   stock: number;
   isInStock: boolean;
   discount: {
