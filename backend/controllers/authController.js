@@ -23,6 +23,8 @@ export const login = async (req, res) => {
 export const registerAdmin = async (req, res) => {
   try {
     const { name, email, password, adminCode } = req.body;
+
+    console.log('Admin registration attempt:', { name, email, adminCode });
     
     // Verify admin code
     if (!adminCode || adminCode !== process.env.ADMIN_SECRET_CODE) {
