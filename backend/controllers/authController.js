@@ -26,6 +26,8 @@ export const registerAdmin = async (req, res) => {
     
     // Verify admin code
     if (!adminCode || adminCode !== process.env.ADMIN_SECRET_CODE) {
+      console.log('Invalid admin code provided:', adminCode);
+      console.log('Expected admin code:', process.env.ADMIN_SECRET_CODE);
       return res.status(401).json({ message: 'Invalid admin code' });
     }
     
