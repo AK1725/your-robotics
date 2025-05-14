@@ -52,15 +52,15 @@ const Login = () => {
       localStorage.setItem('token', token);
       localStorage.setItem('email', user.email);
       localStorage.setItem('firstName', user.name);
-      localStorage.setItem('userRole', user.role);
+      localStorage.setItem('isAdmin', user.isAdmin);
       
       toast({
         title: "Login successful!",
         description: `Welcome back, ${user.name}!`,
       });
       
-      // Redirect based on user role
-      if (user.role === 'admin') {
+      // Redirect based on admin status
+      if (user.isAdmin) {
         navigate('/admin');
       } else {
         navigate('/');

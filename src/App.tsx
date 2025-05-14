@@ -17,7 +17,6 @@ import About from "./pages/About";
 import Contact from "./pages/Contact";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import RegisterAdmin from "./pages/RegisterAdmin";
 import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
 import NotFound from "./pages/NotFound";
@@ -38,7 +37,7 @@ import Footer from "./components/layout/Footer";
 
 const queryClient = new QueryClient();
 
-// Admin route protection component with better token validation
+// Admin route protection component with isAdmin check
 const AdminRoute = ({ children }: { children: React.ReactNode }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
@@ -48,8 +47,9 @@ const AdminRoute = ({ children }: { children: React.ReactNode }) => {
     const validateAdminAccess = async () => {
       try {
         const token = localStorage.getItem("token");
+        const isAdminFlag = localStorage.getItem("isAdmin") === "true";
         
-        if (!token) {
+        if (!token || !isAdminFlag) {
           setIsLoading(false);
           return;
         }
@@ -60,14 +60,14 @@ const AdminRoute = ({ children }: { children: React.ReactNode }) => {
         // Verify admin status with backend
         const response = await axios.get('/api/auth/admin-check');
         
-        if (response.data.user && response.data.user.role === 'admin') {
+        if (response.data.user && response.data.user.isAdmin) {
           setIsAdmin(true);
         }
       } catch (error) {
         console.error("Admin validation error:", error);
         // Clear potentially invalid token
         localStorage.removeItem('token');
-        localStorage.removeItem('userRole');
+        localStorage.removeItem('isAdmin');
       } finally {
         setIsLoading(false);
       }
@@ -146,7 +146,6 @@ const App = () => {
                 <Route path="contact" element={<Contact />} />
                 <Route path="login" element={<Login />} />
                 <Route path="register" element={<Register />} />
-                <Route path="register-admin" element={<RegisterAdmin />} />
                 <Route path="profile" element={<Profile />} />
                 <Route path="cart" element={<Cart />} />
                 <Route path="checkout" element={<Checkout />} />

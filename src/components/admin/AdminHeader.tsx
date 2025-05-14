@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Bell, User } from 'lucide-react';
@@ -35,8 +34,7 @@ const AdminHeader: React.FC = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('email');
     localStorage.removeItem('firstName');
-    localStorage.removeItem('lastName');
-    localStorage.removeItem('userRole');
+    localStorage.removeItem('isAdmin');
     
     // Redirect to login page
     navigate('/login');
