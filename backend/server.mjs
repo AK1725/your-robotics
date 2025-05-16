@@ -1,3 +1,4 @@
+
 import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
@@ -7,13 +8,17 @@ import productRoutes from './routes/productRoutes.js';
 import orderRoutes from './routes/orderRoutes.js';
 import { errorHandler } from './middleware/errorMiddleware.js';
 
+// Load environment variables
 dotenv.config();
+
+// Connect to database
 connectDB();
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);

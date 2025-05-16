@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
+import axios from "axios";
 
 const Register = () => {
   const { toast } = useToast();
@@ -29,18 +30,6 @@ const Register = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [passwordError, setPasswordError] = useState("");
   const [emailError, setEmailError] = useState("");
-
-  // Check if email already exists
-  useEffect(() => {
-    if (formData.email) {
-      const existingEmail = localStorage.getItem("email");
-      if (existingEmail === formData.email) {
-        setEmailError("The Account Already Exists");
-      } else {
-        setEmailError("");
-      }
-    }
-  }, [formData.email]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -58,14 +47,9 @@ const Register = () => {
       }
     }
 
-    // Check email again when changing
+    // Clear email error when changing email
     if (name === "email") {
-      const existingEmail = localStorage.getItem("email");
-      if (existingEmail === value) {
-        setEmailError("The Account Already Exists");
-      } else {
-        setEmailError("");
-      }
+      setEmailError("");
     }
   };
 
@@ -73,20 +57,11 @@ const Register = () => {
     setFormData((prev) => ({ ...prev, agreeToTerms: checked }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (formData.password !== formData.confirmPassword) {
       setPasswordError("Passwords don't match");
-      return;
-    }
-
-    if (emailError) {
-      toast({
-        title: "Registration Failed",
-        description: emailError,
-        variant: "destructive",
-      });
       return;
     }
     
@@ -101,36 +76,45 @@ const Register = () => {
     
     setIsSubmitting(true);
     
-    // Check email existence again before submission
-    const existingEmail = localStorage.getItem("email");
-    if (existingEmail === formData.email) {
-      toast({
-        title: "Registration Failed",
-        description: "The Account Already Exists",
-        variant: "destructive",
+    try {
+      // Call backend API to register user
+      const response = await axios.post('/api/auth/register', {
+        name: `${formData.firstName} ${formData.lastName}`,
+        email: formData.email,
+        password: formData.password
       });
-      setIsSubmitting(false);
-      return;
-    }
-    
-    // Simulate API call
-    setTimeout(() => {
-      // Store user info in localStorage for demonstration purposes
-      // In a real app, you would use proper authentication
-      localStorage.setItem("email", formData.email);
-      localStorage.setItem("firstName", formData.firstName);
-      localStorage.setItem("lastName", formData.lastName);
       
       toast({
         title: "Registration successful!",
         description: "Your account has been created.",
       });
       
-      setIsSubmitting(false);
+      // Redirect to login page after successful registration
+      navigate("/login");
+    } catch (error: any) {
+      console.error("Registration error:", error);
       
-      // Redirect to home page after successful registration
-      navigate("/");
-    }, 1500);
+      // Handle specific error responses from backend
+      if (error.response && error.response.data) {
+        if (error.response.data.message === 'User already exists with this email') {
+          setEmailError("This email is already registered");
+        } else {
+          toast({
+            title: "Registration Failed",
+            description: error.response.data.message || "An error occurred during registration.",
+            variant: "destructive",
+          });
+        }
+      } else {
+        toast({
+          title: "Registration Failed",
+          description: "An error occurred. Please try again later.",
+          variant: "destructive",
+        });
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
