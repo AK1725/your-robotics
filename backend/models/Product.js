@@ -14,7 +14,8 @@ const productSchema = new mongoose.Schema({
     type: { type: String, enum: ['none', 'percentage', 'fixed'], default: 'none' },
     value: { type: Number, default: 0 }
   },
-  featured: { type: Boolean, default: false }
+  featured: { type: Boolean, default: false },
+  currency: { type: String, default: '৳' }
 }, { timestamps: true });
 
 export default mongoose.model('Product', productSchema);

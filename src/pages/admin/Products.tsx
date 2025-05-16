@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
@@ -38,6 +39,7 @@ interface Product {
   tags: string[];
   stock: number;
   isInStock: boolean;
+  currency: string;
   discount: {
     type: 'none' | 'percentage' | 'fixed';
     value: number;
@@ -103,7 +105,7 @@ const Products: React.FC = () => {
     if (product.discount.type === 'percentage') {
       return `${product.discount.value}% OFF`;
     } else if (product.discount.type === 'fixed') {
-      return `$${product.discount.value} OFF`;
+      return `${product.currency}${product.discount.value} OFF`;
     }
     return '';
   };
@@ -195,7 +197,7 @@ const Products: React.FC = () => {
                       </TableCell>
                       <TableCell>
                         <div className="flex flex-col">
-                          ${product.price.toFixed(2)}
+                          {product.currency || '৳'}{product.price.toFixed(2)}
                           {product.discount.type !== 'none' && (
                             <span className="text-xs text-green-500 font-medium">
                               {getDiscountText(product)}

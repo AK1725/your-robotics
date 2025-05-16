@@ -16,6 +16,7 @@ interface ProductStats {
     _id: string;
     name: string;
     price: number;
+    currency: string;
     category: string;
     createdAt: string;
   }>;
@@ -29,6 +30,21 @@ const Dashboard: React.FC = () => {
       return response.data as ProductStats;
     }
   });
+
+  const { data: userSettings } = useQuery({
+    queryKey: ['userSettings'],
+    queryFn: async () => {
+      try {
+        const response = await axios.get('/api/settings');
+        return response.data;
+      } catch (error) {
+        console.error('Error fetching user settings:', error);
+        return { currency: '৳' };
+      }
+    }
+  });
+
+  const currency = userSettings?.currency || '৳';
 
   const cards = [
     {
@@ -108,7 +124,7 @@ const Dashboard: React.FC = () => {
                   <TableRow key={product._id}>
                     <TableCell className="font-medium">{product.name}</TableCell>
                     <TableCell>{product.category}</TableCell>
-                    <TableCell>${product.price.toFixed(2)}</TableCell>
+                    <TableCell>{product.currency || currency}{product.price.toFixed(2)}</TableCell>
                     <TableCell>{formatDistanceToNow(new Date(product.createdAt), { addSuffix: true })}</TableCell>
                   </TableRow>
                 ))}

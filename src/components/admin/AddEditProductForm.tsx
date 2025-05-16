@@ -42,6 +42,7 @@ interface Product {
   tags: string[];
   stock: number;
   isInStock: boolean;
+  currency: string;
   discount: {
     type: 'none' | 'percentage' | 'fixed';
     value: number;
@@ -72,6 +73,7 @@ const productSchema = z.object({
   tagsInput: z.string().default(''),
   stock: z.coerce.number().int().min(0, 'Stock cannot be negative'),
   isInStock: z.boolean().default(true),
+  currency: z.string().default('৳'),
   discount: z.object({
     type: z.enum(['none', 'percentage', 'fixed']),
     value: z.coerce.number().min(0, 'Discount value cannot be negative'),
@@ -108,6 +110,7 @@ const AddEditProductForm: React.FC<AddEditProductFormProps> = ({ product, onSucc
     tagsInput: product?.tags ? product.tags.join(', ') : '',
     stock: product?.stock || 0,
     isInStock: product?.isInStock ?? true,
+    currency: product?.currency || '৳',
     discount: {
       type: product?.discount?.type || 'none',
       value: product?.discount?.value || 0,
@@ -157,6 +160,7 @@ const AddEditProductForm: React.FC<AddEditProductFormProps> = ({ product, onSucc
   };
 
   const discountType = form.watch('discount.type');
+  const currencySymbol = form.watch('currency') || '৳';
 
   return (
     <Form {...form}>
@@ -256,24 +260,52 @@ const AddEditProductForm: React.FC<AddEditProductFormProps> = ({ product, onSucc
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormField
                 control={form.control}
-                name="price"
+                name="currency"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Price ($)</FormLabel>
+                    <FormLabel>Currency</FormLabel>
                     <FormControl>
                       <Input 
-                        type="number" 
-                        step="0.01" 
-                        min="0"
-                        placeholder="29.99" 
+                        disabled
                         {...field} 
                       />
                     </FormControl>
+                    <FormDescription>
+                      The default currency is Taka (৳)
+                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
               />
 
+              <FormField
+                control={form.control}
+                name="price"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Price ({currencySymbol})</FormLabel>
+                    <FormControl>
+                      <div className="relative">
+                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                          {currencySymbol}
+                        </span>
+                        <Input 
+                          type="number" 
+                          step="0.01" 
+                          min="0"
+                          className="pl-7"
+                          placeholder="29.99" 
+                          {...field} 
+                        />
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormField
                 control={form.control}
                 name="stock"
@@ -292,28 +324,28 @@ const AddEditProductForm: React.FC<AddEditProductFormProps> = ({ product, onSucc
                   </FormItem>
                 )}
               />
-            </div>
 
-            <FormField
-              control={form.control}
-              name="isInStock"
-              render={({ field }) => (
-                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                  <div className="space-y-0.5">
-                    <FormLabel className="text-base">Available in Stock</FormLabel>
-                    <FormDescription>
-                      Mark if this product is available for purchase
-                    </FormDescription>
-                  </div>
-                  <FormControl>
-                    <Switch
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
+              <FormField
+                control={form.control}
+                name="isInStock"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                    <div className="space-y-0.5">
+                      <FormLabel className="text-base">Available in Stock</FormLabel>
+                      <FormDescription>
+                        Mark if this product is available for purchase
+                      </FormDescription>
+                    </div>
+                    <FormControl>
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+            </div>
 
             <Card className="p-4">
               <FormField
@@ -349,7 +381,7 @@ const AddEditProductForm: React.FC<AddEditProductFormProps> = ({ product, onSucc
                             <RadioGroupItem value="fixed" />
                           </FormControl>
                           <FormLabel className="font-normal">
-                            Fixed Amount Discount ($)
+                            Fixed Amount Discount ({currencySymbol})
                           </FormLabel>
                         </FormItem>
                       </RadioGroup>
@@ -366,7 +398,7 @@ const AddEditProductForm: React.FC<AddEditProductFormProps> = ({ product, onSucc
                   render={({ field }) => (
                     <FormItem className="mt-4">
                       <FormLabel>
-                        {discountType === 'percentage' ? 'Discount Percentage (%)' : 'Discount Amount ($)'}
+                        {discountType === 'percentage' ? 'Discount Percentage (%)' : `Discount Amount (${currencySymbol})`}
                       </FormLabel>
                       <FormControl>
                         <Input 
