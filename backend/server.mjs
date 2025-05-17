@@ -9,6 +9,7 @@ import orderRoutes from './routes/orderRoutes.js';
 import websiteContentRoutes from './routes/websiteContentRoutes.js';
 import userSettingsRoutes from './routes/userSettingsRoutes.js';
 import { errorHandler } from './middleware/errorMiddleware.js';
+import geminiChatRouter from './routes/geminiChat.js';
 
 // Load environment variables
 dotenv.config();
@@ -20,12 +21,15 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/content', websiteContentRoutes);
 app.use('/api/settings', userSettingsRoutes);
+app.use('/api/gemini-chat', geminiChatRouter);
+
 
 app.use(errorHandler);
 

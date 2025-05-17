@@ -1,9 +1,11 @@
-
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
-import { 
-  Tabs, TabsContent, TabsList, TabsTrigger 
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger
 } from '@/components/ui/tabs';
 import { toast } from '@/components/ui/sonner';
 import {
@@ -14,24 +16,32 @@ import {
   CircleDashed,
 } from 'lucide-react';
 
-import { WebsiteContent } from '@/components/admin/website-content/types';
+import type { WebsiteContent as WebsiteContentType } from '@/components/admin/website-content/types';
 import AddContentDialog from '@/components/admin/website-content/AddContentDialog';
 import EditContentDialog from '@/components/admin/website-content/EditContentDialog';
 import SectionView from '@/components/admin/website-content/SectionView';
-import { ContentFormValues, contentSchema } from '@/components/admin/website-content/ContentForm';
+import { ContentFormValues } from '@/components/admin/website-content/ContentForm';
 
-const WebsiteContent = () => {
+const SECTIONS = [
+  { id: 'hero', name: 'Hero', icon: <LayoutGrid size={20} /> },
+  { id: 'about', name: 'About', icon: <Home size={20} /> },
+  { id: 'products', name: 'Products', icon: <ShoppingBag size={20} /> },
+  { id: 'testimonials', name: 'Testimonials', icon: <Star size={20} /> },
+  { id: 'misc', name: 'Misc', icon: <CircleDashed size={20} /> },
+];
+
+const WebsiteContentAdminPage = () => {
   const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState<string>('hero');
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
-  const [editingContent, setEditingContent] = useState<WebsiteContent | null>(null);
+  const [editingContent, setEditingContent] = useState<WebsiteContentType | null>(null);
 
-  const { data: contents, isLoading } = useQuery({
+  const { data: contents = [], isLoading } = useQuery({
     queryKey: ['websiteContents'],
     queryFn: async () => {
       try {
         const response = await axios.get('/api/content');
-        return response.data as WebsiteContent[];
+        return response.data as WebsiteContentType[];
       } catch (error) {
         console.error('Error fetching website content:', error);
         return [];
@@ -87,7 +97,7 @@ const WebsiteContent = () => {
     createContentMutation.mutate(data);
   };
 
-  const handleEditContent = (content: WebsiteContent) => {
+  const handleEditContent = (content: WebsiteContentType) => {
     setEditingContent(content);
   };
 
@@ -98,79 +108,29 @@ const WebsiteContent = () => {
   };
 
   const handleDeleteContent = (id: string) => {
-    if (confirm('Are you sure you want to delete this content?')) {
+    if (window.confirm('Are you sure you want to delete this content?')) {
       deleteContentMutation.mutate(id);
     }
   };
 
-  const getTabIcon = (tab: string) => {
-    switch (tab) {
-      case 'hero':
-        return <Home className="h-4 w-4" />;
-      case 'categories':
-        return <LayoutGrid className="h-4 w-4" />;
-      case 'featured':
-        return <Star className="h-4 w-4" />;
-      case 'products':
-        return <ShoppingBag className="h-4 w-4" />;
-      default:
-        return <CircleDashed className="h-4 w-4" />;
-    }
-  };
-
-  const filteredContents = contents?.filter(
-    (content) => content.section === activeTab
-  ) || [];
-
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">Website Content</h1>
-          <p className="text-muted-foreground">
-            Manage content displayed on your website
-          </p>
-        </div>
-        <AddContentDialog 
-          isOpen={isAddDialogOpen}
-          onOpenChange={setIsAddDialogOpen}
-          onAdd={handleAddContent}
-          activeTab={activeTab}
-        />
-        <EditContentDialog
-          content={editingContent}
-          onOpenChange={(open) => !open && setEditingContent(null)}
-          onUpdate={handleUpdateContent}
-        />
-      </div>
-
-      <Tabs defaultValue={activeTab} onValueChange={setActiveTab} className="space-y-4">
+    <div className="p-4">
+      <h1 className="text-2xl font-bold mb-4">Website Content Management</h1>
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList>
-          <TabsTrigger value="hero" className="flex items-center gap-2">
-            <Home className="h-4 w-4" />
-            <span>Hero</span>
-          </TabsTrigger>
-          <TabsTrigger value="categories" className="flex items-center gap-2">
-            <LayoutGrid className="h-4 w-4" />
-            <span>Categories</span>
-          </TabsTrigger>
-          <TabsTrigger value="featured" className="flex items-center gap-2">
-            <Star className="h-4 w-4" />
-            <span>Featured</span>
-          </TabsTrigger>
-          <TabsTrigger value="products" className="flex items-center gap-2">
-            <ShoppingBag className="h-4 w-4" />
-            <span>Products</span>
-          </TabsTrigger>
+          {SECTIONS.map((section) => (
+            <TabsTrigger key={section.id} value={section.id}>
+              <span className="flex items-center gap-2">{section.icon}{section.name}</span>
+            </TabsTrigger>
+          ))}
         </TabsList>
-
-        {['hero', 'categories', 'featured', 'products'].map((section) => (
-          <TabsContent key={section} value={section}>
+        {SECTIONS.map((section) => (
+          <TabsContent key={section.id} value={section.id}>
             <SectionView
-              section={section}
-              icon={getTabIcon(section)}
+              section={section.id}
+              icon={section.icon}
               isLoading={isLoading}
-              contents={filteredContents}
+              contents={contents.filter(c => c.section === section.id)}
               onAdd={() => setIsAddDialogOpen(true)}
               onEdit={handleEditContent}
               onDelete={handleDeleteContent}
@@ -178,8 +138,19 @@ const WebsiteContent = () => {
           </TabsContent>
         ))}
       </Tabs>
+      <AddContentDialog
+        isOpen={isAddDialogOpen}
+        onOpenChange={setIsAddDialogOpen}
+        activeTab={activeTab}
+        onAdd={handleAddContent}
+      />
+      <EditContentDialog
+        content={editingContent}
+        onOpenChange={(open) => { if (!open) setEditingContent(null); }}
+        onUpdate={handleUpdateContent}
+      />
     </div>
   );
 };
 
-export default WebsiteContent;
+export default WebsiteContentAdminPage;

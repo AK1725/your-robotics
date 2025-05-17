@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ChatInterface } from "@/components/ai-assistant/ChatInterface";
@@ -16,13 +15,12 @@ const AiAssistant = () => {
   ]);
   const [inputMessage, setInputMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  
+
   // Handle submit of message
-  const handleSubmit = (e?: React.FormEvent) => {
+  const handleSubmit = async (e?: React.FormEvent) => {
     e?.preventDefault();
-    
     if (!inputMessage.trim()) return;
-    
+
     // Add user message
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -30,42 +28,36 @@ const AiAssistant = () => {
       text: inputMessage,
       timestamp: new Date(),
     };
-    
     setMessages((prev) => [...prev, userMessage]);
     setInputMessage("");
     setIsLoading(true);
-    
-    // Simulate AI response (would be replaced with actual API call)
-    setTimeout(() => {
-      const botResponses: { [key: string]: string } = {
-        arduino: "Arduino is a great platform for beginners! Our most popular Arduino boards include the Uno, Mega, and Nano. Would you like to see our Arduino collection?",
-        raspberry: "Raspberry Pi is perfect for more advanced projects. We have the Raspberry Pi 4 in various RAM configurations, as well as the Raspberry Pi Zero for smaller projects.",
-        sensor: "We have a wide range of sensors including ultrasonic, infrared, temperature, humidity, and motion sensors. What type of sensor are you looking for?",
-        motor: "We carry DC motors, servo motors, stepper motors, and motor drivers. What kind of project are you working on?",
-        robot: "Building a robot? That's exciting! We have complete robot kits for beginners, or you can choose individual components if you have a specific design in mind.",
-      };
-      
-      // Determine response based on keywords in user message
-      const userMessageLower = inputMessage.toLowerCase();
-      let botResponseText = "I'm not sure I understand. Could you provide more details about what you're looking for?";
-      
-      for (const [keyword, response] of Object.entries(botResponses)) {
-        if (userMessageLower.includes(keyword)) {
-          botResponseText = response;
-          break;
-        }
-      }
-      
+
+    try {
+      // Call your backend Gemini API route
+      const response = await fetch("/api/gemini-chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: inputMessage }),
+      });
+      const data = await response.json();
+
       const botMessage: Message = {
         id: Date.now().toString(),
         type: "bot",
-        text: botResponseText,
+        text: data.reply || "Sorry, I couldn't generate a reply right now.",
         timestamp: new Date(),
       };
-      
       setMessages((prev) => [...prev, botMessage]);
-      setIsLoading(false);
-    }, 1000);
+    } catch (err) {
+      const botMessage: Message = {
+        id: Date.now().toString(),
+        type: "bot",
+        text: "Sorry, something went wrong. Please try again.",
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, botMessage]);
+    }
+    setIsLoading(false);
   };
 
   return (
@@ -77,13 +69,11 @@ const AiAssistant = () => {
             Chat with our AI assistant for help finding the right parts for your robotics project.
           </p>
         </div>
-        
         <Tabs defaultValue="chat" className="w-full">
           <TabsList className="grid grid-cols-2 max-w-[400px] mx-auto mb-6">
             <TabsTrigger value="chat">Chat</TabsTrigger>
             <TabsTrigger value="samples">Sample Questions</TabsTrigger>
           </TabsList>
-          
           <TabsContent value="chat" className="mt-0">
             <ChatInterface 
               messages={messages}
@@ -93,7 +83,6 @@ const AiAssistant = () => {
               handleSubmit={handleSubmit}
             />
           </TabsContent>
-          
           <TabsContent value="samples" className="mt-0">
             <SampleQuestions 
               setInputMessage={setInputMessage}
